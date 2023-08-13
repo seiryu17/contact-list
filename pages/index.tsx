@@ -301,7 +301,7 @@ export default function Home() {
       </h1>
       <div
         css={css`
-          padding: 1rem 1rem;
+          padding: ${mq.md ? "1rem 3rem;" : "1rem"};
         `}
       >
         <CardList count={count || "-"} favContactList={favContactList.length} />

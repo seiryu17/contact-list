@@ -17,10 +17,11 @@ function Footer() {
   return (
     <div
       css={css`
+        margin-top: 2rem;
         background-color: #f5f5f5;
         padding: 1.5rem 2rem;
         text-align: ${mq.md ? "flex-start" : "center"};
-        padding: ${mq.lg ? "1.5rem 8rem" : "1.5rem 2rem"};
+        padding: 1.5rem 3rem;
       `}
     >
       <img
