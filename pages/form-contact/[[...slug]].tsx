@@ -14,6 +14,8 @@ import EDIT_PHONE_NUMBER from "@/src/apollo-client/mutations/edit-number";
 import { ArrowLeftOutlined } from "@ant-design/icons";
 import FIELDS from "@/src/constant/form-field";
 import ASSETS from "@/src/constant/assets";
+import useContactLists from "@/src/hooks/useContactLists";
+import useContactCount from "@/src/hooks/useContactCount";
 
 function FormContact() {
   const [form] = Form.useForm();
@@ -25,7 +27,14 @@ function FormContact() {
     error: errorDetail,
     loading: loadingDetail,
   } = useContactDetail(id);
-  const [createContact, { loading }] = useMutation(CREATE_CONTACT);
+  const { refetchContacts } = useContactLists();
+  const { refetchContactsCount } = useContactCount();
+  const [createContact, { loading }] = useMutation(CREATE_CONTACT, {
+    onCompleted: () => {
+      refetchContacts();
+      refetchContactsCount();
+    },
+  });
   const [editContact] = useMutation(EDIT_CONTACT);
   const [editPhoneNumber] = useMutation(EDIT_PHONE_NUMBER);
   const modeCapitalize = mode.charAt(0).toUpperCase() + mode.slice(1);
