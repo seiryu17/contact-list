@@ -8,19 +8,20 @@ import {
 import { css } from "@emotion/react";
 import { Button, Space, Tag } from "antd";
 import { ColumnsType } from "antd/lib/table";
-import { useRouter } from "next/router";
 
 interface IProps {
   handleFavoriteToggle: (record: IContact) => void;
-  handleDelete: (id: string) => void;
+  handleDelete: (id: string) => Promise<void>;
+  refetchContactsCount: () => void;
+  router: any;
 }
 
 export const getColumnConfig = ({
   handleDelete,
   handleFavoriteToggle,
+  refetchContactsCount,
+  router,
 }: IProps): ColumnsType<IContact> => {
-  const router = useRouter();
-
   return [
     {
       dataIndex: "id",
@@ -99,7 +100,9 @@ export const getColumnConfig = ({
           <Button
             icon={<DeleteOutlined />}
             shape="round"
-            onClick={() => handleDelete(record.id)}
+            onClick={() =>
+              handleDelete(record.id).then(() => refetchContactsCount())
+            }
             danger
           >
             Delete

@@ -10,7 +10,7 @@ import { useRouter } from "next/router";
 import useContactCount from "@/src/hooks/useContactCount";
 import { useMutation } from "@apollo/client";
 import DELETE_CONTACT from "@/src/apollo-client/mutations/delete-contact";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import useDebounce from "@/src/hooks/useDebounce";
 import { GetLocalStorage, SetLocalStorage } from "@/src/utility/local-storage";
 import CREATE_CONTACT from "@/src/apollo-client/mutations/create-contact";
@@ -19,6 +19,7 @@ import Header from "@/src/components/header";
 import Partner from "@/src/components/partner";
 import CardList from "@/src/components/card/card-list";
 import { getColumnConfig } from "@/src/components/table-column";
+import SearchInput from "@/src/components/search-input";
 
 const PAGE_LIMIT = 10;
 
@@ -140,10 +141,46 @@ export default function Home() {
   const columns = getColumnConfig({
     handleDelete,
     handleFavoriteToggle,
+    refetchContactsCount,
+    router,
   });
 
-  const TableWrapperRegular = () => {
-    return (
+  const TableWrapperFavorite = () => (
+    <div
+      css={css`
+        background-color: #ffffff;
+        padding: 1rem 0;
+        border-radius: 8px;
+        margin-top: 4rem;
+        box-shadow: 6px 8px 16px -7px rgba(110, 110, 110, 1);
+      `}
+    >
+      <h1
+        css={css`
+          margin: 0.5rem 1rem;
+        `}
+      >
+        Favorite Contact List
+      </h1>
+      <Table
+        scroll={{ x: 300 }}
+        columns={columns.filter((item) => item.key !== "action")}
+        dataSource={favContactList}
+        rowKey="id"
+        pagination={{
+          style: {
+            padding: "1.5rem 1rem",
+            borderRadius: "0 0 8px 8px",
+            margin: 0,
+            backgroundColor: "#FFFFFF",
+          },
+        }}
+      />
+    </div>
+  );
+
+  const TableWrapperRegular = useMemo(
+    () => (
       <>
         <div
           css={css`
@@ -171,14 +208,7 @@ export default function Home() {
               gap: 8px;
             `}
           >
-            <Input
-              value={searchVal}
-              css={css`
-                border-radius: 16px;
-              `}
-              onChange={(e) => setSearchVal(e.target.value)}
-              placeholder="Search Name..."
-            />
+            <SearchInput searchVal={searchVal} setSearchVal={setSearchVal} />
             <Button
               icon={
                 <PlusOutlined
@@ -218,44 +248,9 @@ export default function Home() {
           }}
         />
       </>
-    );
-  };
-
-  const TableWrapperFavorite = () => {
-    return (
-      <div
-        css={css`
-          background-color: #ffffff;
-          padding: 1rem 0;
-          border-radius: 8px;
-          margin-top: 4rem;
-          box-shadow: 6px 8px 16px -7px rgba(110, 110, 110, 1);
-        `}
-      >
-        <h1
-          css={css`
-            margin: 0.5rem 1rem;
-          `}
-        >
-          Favorite Contact List
-        </h1>
-        <Table
-          scroll={{ x: 300 }}
-          columns={columns.filter((item) => item.key !== "action")}
-          dataSource={favContactList}
-          rowKey="id"
-          pagination={{
-            style: {
-              padding: "1.5rem 1rem",
-              borderRadius: "0 0 8px 8px",
-              margin: 0,
-              backgroundColor: "#FFFFFF",
-            },
-          }}
-        />
-      </div>
-    );
-  };
+    ),
+    [loading, loadingCount, data, count, columns, searchVal]
+  );
 
   if (error || errorCount) return <div>something went wrong</div>;
   return (
@@ -278,7 +273,7 @@ export default function Home() {
       >
         <CardList count={count || "-"} favContactList={favContactList.length} />
         <TableWrapperFavorite />
-        <TableWrapperRegular />
+        {TableWrapperRegular}
       </div>
     </Layout>
   );

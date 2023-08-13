@@ -43,7 +43,7 @@ function Header() {
             font-weight: 400;
           `}
         >
-          Welcome to Rio's GoTo Assignment
+          Welcome to Rio&apos;s GoTo Assignment
         </span>
         <span
           css={css`
@@ -71,7 +71,7 @@ function Header() {
           `}
         >
           Discover a new way to preserve your cherished connections. Introducing
-          Rio's Contact List, where every relationship finds its home.
+          Rio&apos;s Contact List, where every relationship finds its home.
           Seamlessly save, organize, and celebrate the special people in your
           life.
         </span>
