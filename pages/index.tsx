@@ -20,6 +20,7 @@ import CardList from "@/src/components/card/card-list";
 import { getColumnConfig } from "@/src/components/table-column";
 import SearchInput from "@/src/components/search-input";
 import Hero from "@/src/components/hero";
+import sortData from "@/src/utility/sort";
 
 const PAGE_LIMIT = 10;
 
@@ -29,7 +30,7 @@ export default function Home() {
   const [searchVal, setSearchVal] = useState("");
   const [query, setQuery] = useState("");
   const [favContactList, setFavContactList] = useState<IContact[]>([]);
-
+  const [currentPage, setCurrentPage] = useState(1);
   const { data, error, loading, fetchMore, refetchContacts } =
     useContactLists(query);
   const {
@@ -50,6 +51,7 @@ export default function Home() {
     },
   });
   const count = dataCount?.contact_aggregate.aggregate?.count;
+
   const sortedContacts = data?.contact
     ? [...data.contact].sort((a: IContact, b: IContact) =>
         a.first_name.localeCompare(b.first_name)
@@ -70,6 +72,14 @@ export default function Home() {
     [searchVal],
     500
   );
+
+  const startIndex = (currentPage - 1) * PAGE_LIMIT;
+  const endIndex = startIndex + PAGE_LIMIT;
+  const displayedContacts = favContactList.slice(startIndex, endIndex);
+
+  const handleFavoritePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
 
   const handleFavoriteToggle = async (record: IContact) => {
     const isFavorite = favContactList.some(
@@ -170,7 +180,7 @@ export default function Home() {
       <Table
         scroll={{ x: 300 }}
         columns={columns.filter((item) => item.key !== "action")}
-        dataSource={favContactList}
+        dataSource={sortData(displayedContacts)}
         rowKey="id"
         footer={
           mq.xs
@@ -187,6 +197,11 @@ export default function Home() {
             : undefined
         }
         pagination={{
+          onChange: handleFavoritePageChange,
+          current: currentPage,
+          total: favContactList.length,
+          pageSize: PAGE_LIMIT,
+          showSizeChanger: false,
           style: {
             padding: "1.5rem 1rem",
             borderRadius: "0 0 8px 8px",
