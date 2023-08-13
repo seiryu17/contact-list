@@ -3,7 +3,7 @@
 import useContactLists from "@/src/hooks/useContactLists";
 import { css } from "@emotion/react";
 import { IContact } from "@/src/constant/form-contant";
-import { Button, Grid, Input, message } from "antd";
+import { Button, Grid, message } from "antd";
 import Table from "antd/lib/table";
 import { PlusOutlined } from "@ant-design/icons";
 import { useRouter } from "next/router";
@@ -15,11 +15,11 @@ import useDebounce from "@/src/hooks/useDebounce";
 import { GetLocalStorage, SetLocalStorage } from "@/src/utility/local-storage";
 import CREATE_CONTACT from "@/src/apollo-client/mutations/create-contact";
 import Layout from "@/src/components/layout";
-import Header from "@/src/components/header";
 import Partner from "@/src/components/partner";
 import CardList from "@/src/components/card/card-list";
 import { getColumnConfig } from "@/src/components/table-column";
 import SearchInput from "@/src/components/search-input";
+import Hero from "@/src/components/hero";
 
 const PAGE_LIMIT = 10;
 
@@ -50,6 +50,11 @@ export default function Home() {
     },
   });
   const count = dataCount?.contact_aggregate.aggregate?.count;
+  const sortedContacts = data?.contact
+    ? [...data.contact].sort((a: IContact, b: IContact) =>
+        a.first_name.localeCompare(b.first_name)
+      )
+    : [];
   const router = useRouter();
   const mq = useBreakpoint();
 
@@ -167,6 +172,20 @@ export default function Home() {
         columns={columns.filter((item) => item.key !== "action")}
         dataSource={favContactList}
         rowKey="id"
+        footer={
+          mq.xs
+            ? () => (
+                <span
+                  css={css`
+                    color: #91e3a9;
+                    font-weight: 900;
+                  `}
+                >
+                  This table is scrollable / swipeable
+                </span>
+              )
+            : undefined
+        }
         pagination={{
           style: {
             padding: "1.5rem 1rem",
@@ -233,8 +252,22 @@ export default function Home() {
           scroll={{ x: 300 }}
           loading={loading || loadingCount}
           columns={columns}
-          dataSource={data?.contact as IContact[]}
+          dataSource={sortedContacts}
           rowKey="id"
+          footer={
+            mq.xs
+              ? () => (
+                  <span
+                    css={css`
+                      color: #91e3a9;
+                      font-weight: 900;
+                    `}
+                  >
+                    This table is scrollable / swipeable
+                  </span>
+                )
+              : undefined
+          }
           pagination={{
             style: {
               padding: "1.5rem 1rem",
@@ -255,7 +288,7 @@ export default function Home() {
   if (error || errorCount) return <div>something went wrong</div>;
   return (
     <Layout>
-      <Header />
+      <Hero />
       <Partner />
       <h1
         css={css`

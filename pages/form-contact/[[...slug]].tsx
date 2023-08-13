@@ -16,6 +16,7 @@ import FIELDS from "@/src/constant/form-field";
 import ASSETS from "@/src/constant/assets";
 import useContactLists from "@/src/hooks/useContactLists";
 import useContactCount from "@/src/hooks/useContactCount";
+import Layout from "@/src/components/layout";
 
 function FormContact() {
   const [form] = Form.useForm();
@@ -105,7 +106,7 @@ function FormContact() {
         });
         if (contactResult.data) {
           message.success("Contact edited successfully.");
-
+          router.push("/");
           const changedPhoneIndices = formInput.phones.filter(
             (formPhone, index) => {
               const phone = dataDetail.contact_by_pk.phones[index];
@@ -139,79 +140,81 @@ function FormContact() {
   if (errorDetail && mode === "edit") return <div>Something went error.</div>;
 
   return (
-    <div
-      css={css`
-        height: 100%;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        background-image: url(${ASSETS.BG_FORM});
-        object-fit: contain;
-        background-repeat: no-repeat;
-        background-size: cover;
-      `}
-    >
+    <Layout bg="#ffffff">
       <div
         css={css`
-          padding: 1rem;
-          margin: 0 1rem;
-          width: 450px;
-          box-shadow: 6px 8px 16px -7px rgba(110, 110, 110, 1);
-          border-radius: 8px;
-          background-color: #ffffff;
+          height: 100%;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          background-image: url(${ASSETS.BG_FORM});
+          object-fit: contain;
+          background-repeat: no-repeat;
+          background-size: cover;
         `}
       >
-        <h1>
-          <ArrowLeftOutlined onClick={() => router.push("/")} />{" "}
-          {modeCapitalize} Contact
-        </h1>
-        <Form
-          layout="vertical"
-          form={form}
-          disabled={loadingDetail}
-          name="control-hooks"
-          onFinish={onFinish}
+        <div
           css={css`
-            max-width: 100%;
             padding: 1rem;
-            background: #ffffff;
+            margin: 0 1rem;
+            width: 450px;
+            box-shadow: 6px 8px 16px -7px rgba(110, 110, 110, 1);
             border-radius: 8px;
+            background-color: #ffffff;
           `}
         >
-          {FIELDS.map((item, i) => (
-            <Form.Item
-              key={i}
-              name={item.name}
-              label={item.label}
-              rules={item.rules}
-            >
-              <Input
-                onKeyPress={(event) => {
-                  if (!/^[A-Za-z0-9]*$/.test(event.key)) {
-                    event.preventDefault();
-                  }
-                }}
-              />
-            </Form.Item>
-          ))}
-          <PhoneField mode={mode} />
-          <Form.Item
+          <h1>
+            <ArrowLeftOutlined onClick={() => router.push("/")} />{" "}
+            {modeCapitalize} Contact
+          </h1>
+          <Form
+            layout="vertical"
+            form={form}
+            disabled={loadingDetail}
+            name="control-hooks"
+            onFinish={onFinish}
             css={css`
-              text-align: right;
+              max-width: 100%;
+              padding: 1rem;
+              background: #ffffff;
+              border-radius: 8px;
             `}
           >
-            <Button
-              loading={loading}
-              type="primary"
-              shape="round"
-              htmlType="submit"
+            {FIELDS.map((item, i) => (
+              <Form.Item
+                key={i}
+                name={item.name}
+                label={item.label}
+                rules={item.rules}
+              >
+                <Input
+                  onKeyPress={(event) => {
+                    if (!/^[A-Za-z0-9]*$/.test(event.key)) {
+                      event.preventDefault();
+                    }
+                  }}
+                />
+              </Form.Item>
+            ))}
+            <PhoneField mode={mode} />
+            <Form.Item
+              css={css`
+                text-align: right;
+              `}
             >
-              Submit {mode === "edit" && modeCapitalize}
-            </Button>
-          </Form.Item>
-        </Form>
+              <Button
+                loading={loading}
+                type="primary"
+                shape="round"
+                htmlType="submit"
+              >
+                Submit {mode === "edit" && modeCapitalize}
+              </Button>
+            </Form.Item>
+          </Form>
+        </div>
       </div>
-    </div>
+    </Layout>
   );
 }
 

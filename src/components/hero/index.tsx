@@ -6,16 +6,16 @@ import React from "react";
 
 const { useBreakpoint } = Grid;
 
-function Header() {
+function Hero() {
   const mq = useBreakpoint();
 
   return (
     <div
       css={css`
-        height: 100%;
         margin: 4rem 0 2rem 0;
         padding: 1.5rem 2rem;
         display: flex;
+        align-items: center;
         flex-direction: column;
         text-align: center;
         gap: 48px;
@@ -91,4 +91,4 @@ function Header() {
   );
 }
 
-export default Header;
+export default Hero;

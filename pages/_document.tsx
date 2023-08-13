@@ -9,7 +9,9 @@ export default function Document() {
       `}
       lang="en"
     >
-      <Head />
+      <Head>
+        <title>Contact List</title>
+      </Head>
       <body
         css={css`
           height: 100%;

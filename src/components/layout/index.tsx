@@ -1,22 +1,31 @@
 import ASSETS from "@/src/constant/assets";
 import { css } from "@emotion/react";
 import React from "react";
-import Header from "../header";
+import Header from "../hero";
 import { Grid } from "antd";
 import Link from "next/link";
+import { useRouter } from "next/router";
+import Footer from "../footer";
 
 interface IProps {
   children: React.ReactNode;
+  bg?: string;
 }
 
 const { useBreakpoint } = Grid;
 
-function Layout({ children }: IProps) {
+function Layout({ children, bg }: IProps) {
   const mq = useBreakpoint();
+  const router = useRouter();
   return (
-    <div>
+    <div
+      css={css`
+        height: 100%;
+      `}
+    >
       <div
         css={css`
+          background-color: ${bg || "transparent"};
           display: flex;
           justify-content: space-between;
           align-items: center;
@@ -24,11 +33,11 @@ function Layout({ children }: IProps) {
           width: 100%;
           position: absolute;
           top: 0;
-          background-color: transparent;
         `}
       >
         <img
           src={ASSETS.GOTO_LOGO}
+          onClick={() => router.push("/")}
           css={css`
             cursor: pointer;
           `}
@@ -57,8 +66,8 @@ function Layout({ children }: IProps) {
           ))}
         </nav>
       </div>
-
       {children}
+      <Footer />
     </div>
   );
 }
