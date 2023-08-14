@@ -1,4 +1,4 @@
-import ASSETS from "@/src/constant/assets";
+import ASSETS from "../../../src/constant/assets";
 import { css } from "@emotion/react";
 import { Grid } from "antd";
 import Layout from "antd/lib/layout/layout";
@@ -83,6 +83,7 @@ function Hero() {
         `}
       >
         <img
+          alt="World"
           src={ASSETS.WORLD_CONNECT_ART}
           width={`${!mq.lg ? "60%" : "80%"}`}
         />

@@ -1,7 +1,6 @@
 import { ContactsFilled, HeartFilled } from "@ant-design/icons";
 import { Col, Grid, Row } from "antd";
 import { css } from "@emotion/react";
-import { IContact } from "@/src/constant/form-contant";
 import Card from ".";
 
 const { useBreakpoint } = Grid;
