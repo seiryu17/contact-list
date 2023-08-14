@@ -3,14 +3,12 @@
 import useContactLists from "@/src/hooks/useContactLists";
 import { css } from "@emotion/react";
 import { IContact } from "@/src/constant/form-contant";
-import { Button, Grid, message } from "antd";
-import Table from "antd/lib/table";
-import { PlusOutlined } from "@ant-design/icons";
+import { Grid, message } from "antd";
 import { useRouter } from "next/router";
 import useContactCount from "@/src/hooks/useContactCount";
 import { useMutation } from "@apollo/client";
 import DELETE_CONTACT from "@/src/apollo-client/mutations/delete-contact";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import useDebounce from "@/src/hooks/useDebounce";
 import { GetLocalStorage, SetLocalStorage } from "@/src/utility/local-storage";
 import CREATE_CONTACT from "@/src/apollo-client/mutations/create-contact";
@@ -18,9 +16,9 @@ import Layout from "@/src/components/layout";
 import Partner from "@/src/components/partner";
 import CardList from "@/src/components/card/card-list";
 import { getColumnConfig } from "@/src/components/table-column";
-import SearchInput from "@/src/components/search-input";
 import Hero from "@/src/components/hero";
-import sortData from "@/src/utility/sort";
+import TableContentRegular from "@/src/components/table-content-regular";
+import TableContentFavorite from "@/src/components/table-content-favorite";
 
 const PAGE_LIMIT = 10;
 
@@ -160,146 +158,6 @@ export default function Home() {
     router,
   });
 
-  const TableWrapperFavorite = () => (
-    <div
-      css={css`
-        background-color: #ffffff;
-        padding: 1rem 0;
-        border-radius: 8px;
-        margin-top: 4rem;
-        box-shadow: 6px 8px 16px -7px rgba(110, 110, 110, 1);
-      `}
-    >
-      <h1
-        css={css`
-          margin: 0.5rem 1rem;
-        `}
-      >
-        Favorite Contact List
-      </h1>
-      <Table
-        scroll={{ x: 300 }}
-        columns={columns.filter((item) => item.key !== "action")}
-        dataSource={sortData(displayedContacts)}
-        rowKey="id"
-        footer={
-          mq.xs
-            ? () => (
-                <span
-                  css={css`
-                    color: #91e3a9;
-                    font-weight: 900;
-                  `}
-                >
-                  This table is scrollable / swipeable
-                </span>
-              )
-            : undefined
-        }
-        pagination={{
-          onChange: handleFavoritePageChange,
-          current: currentPage,
-          total: favContactList.length,
-          pageSize: PAGE_LIMIT,
-          showSizeChanger: false,
-          style: {
-            padding: "1.5rem 1rem",
-            borderRadius: "0 0 8px 8px",
-            margin: 0,
-            backgroundColor: "#FFFFFF",
-          },
-        }}
-      />
-    </div>
-  );
-
-  const TableWrapperRegular = useMemo(
-    () => (
-      <>
-        <div
-          css={css`
-            display: flex;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            align-items: center;
-            background-color: white;
-            padding: 1rem;
-            border-radius: 8px 8px 0 0;
-            margin-top: 4rem;
-            box-shadow: 6px 8px 16px -7px rgba(110, 110, 110, 1);
-          `}
-        >
-          <h1
-            css={css`
-              margin-bottom: 0;
-            `}
-          >
-            Contact List
-          </h1>
-          <div
-            css={css`
-              display: flex;
-              gap: 8px;
-            `}
-          >
-            <SearchInput searchVal={searchVal} setSearchVal={setSearchVal} />
-            <Button
-              icon={
-                <PlusOutlined
-                  css={css`
-                    stroke-width: 3;
-                    stroke: white;
-                  `}
-                />
-              }
-              onClick={() => router.push("/form-contact")}
-              shape="round"
-              type="primary"
-            >
-              Add {mq.xs ? "" : "Contact"}
-            </Button>
-          </div>
-        </div>
-        <Table
-          css={css`
-            box-shadow: 6px 8px 16px -7px rgba(110, 110, 110, 1);
-          `}
-          scroll={{ x: 300 }}
-          loading={loading || loadingCount}
-          columns={columns}
-          dataSource={sortedContacts}
-          rowKey="id"
-          footer={
-            mq.xs
-              ? () => (
-                  <span
-                    css={css`
-                      color: #91e3a9;
-                      font-weight: 900;
-                    `}
-                  >
-                    This table is scrollable / swipeable
-                  </span>
-                )
-              : undefined
-          }
-          pagination={{
-            style: {
-              padding: "1.5rem 1rem",
-              borderRadius: "0 0 8px 8px",
-              margin: 0,
-              backgroundColor: "#FFFFFF",
-            },
-            total: count,
-            defaultPageSize: PAGE_LIMIT,
-            onChange: handlePageChange,
-          }}
-        />
-      </>
-    ),
-    [loading, loadingCount, data, count, columns, searchVal]
-  );
-
   if (error || errorCount) return <div>something went wrong</div>;
   return (
     <Layout>
@@ -320,8 +178,26 @@ export default function Home() {
         `}
       >
         <CardList count={count || "-"} favContactList={favContactList.length} />
-        <TableWrapperFavorite />
-        {TableWrapperRegular}
+        <TableContentFavorite
+          PAGE_LIMIT={PAGE_LIMIT}
+          favContactList={favContactList}
+          columns={columns}
+          currentPage={currentPage}
+          handleFavoritePageChange={handleFavoritePageChange}
+          displayedContacts={displayedContacts}
+        />
+        <TableContentRegular
+          loading={loading}
+          loadingCount={loadingCount}
+          sortedContacts={sortedContacts}
+          columns={columns}
+          searchVal={searchVal}
+          setSearchVal={setSearchVal}
+          handlePageChange={handlePageChange}
+          count={count}
+          handleDelete={handleDelete}
+          PAGE_LIMIT={PAGE_LIMIT}
+        />
       </div>
     </Layout>
   );
